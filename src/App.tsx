@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import 'beercss'
 import 'material-dynamic-colors'
@@ -10,7 +11,7 @@ interface Item {
   completed_at: string | null
 }
 
-function MenuList() {
+function MenuList({ isShowIncomplete, isShowComplete }: { isShowIncomplete: boolean, isShowComplete: boolean }) {
   const fetcher = (url: string) => fetch(url).then(res => res.json())
   const { data: items, isLoading } = useSWRImmutable<Item[]>('https://komeda-api-20241013-d054cdaa7331.herokuapp.com/', fetcher)
 
@@ -18,9 +19,11 @@ function MenuList() {
     return <progress className="circle"></progress>
   }
 
+  const filteredItems = items.filter((item) => item.completed_at ? isShowComplete : isShowIncomplete)
+
   return(
     <div className="grid">
-      {items.map((item: Item) => {
+      {filteredItems.map((item: Item) => {
         return <MenuCard item={item} key={item.id}/>
       })}
     </div>
@@ -44,6 +47,18 @@ function MenuCard({ item }: { item: Item}) {
 }
 
 function App() {
+  const [checkedItems, setCheckedItems] = useState({
+    incomplete: true,
+    complete: true,
+  });
+
+  const handleChange = (key: keyof typeof checkedItems) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
+
   return (
     <>
       <header>
@@ -52,7 +67,19 @@ function App() {
         </nav>
       </header>
       <main className="responsive">
-        <MenuList />
+        <div className="field middle-align">
+          <nav>
+            <label className="checkbox">
+              <input type="checkbox" checked={checkedItems.incomplete} onChange={() => handleChange('incomplete')} />
+              <span>未</span>
+            </label>
+            <label className="checkbox">
+              <input type="checkbox" checked={checkedItems.complete} onChange={() => handleChange('complete')} />
+              <span>済</span>
+            </label>
+          </nav>
+        </div>
+        <MenuList isShowIncomplete={checkedItems.incomplete} isShowComplete={checkedItems.complete} />
       </main>
     </>
   )
