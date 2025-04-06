@@ -38,7 +38,7 @@ function MenuCard({ item }: { item: Item}) {
         <div className="padding">
           <h6>{item.name}</h6>
           <nav>
-            {item.completed_at ? (<><i>check_box</i>2025-04-05</>) : <i>check_box_outline_blank</i>}
+            {item.completed_at ? (<><i>check_box</i>{item.completed_at}</>) : <i>check_box_outline_blank</i>}
           </nav>
         </div>
       </article>
