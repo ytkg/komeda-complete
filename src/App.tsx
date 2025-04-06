@@ -29,7 +29,7 @@ function MenuList() {
 
 function MenuCard({ item }: { item: Item}) {
   return (
-    <div className="s12 m6 l3">
+    <div className="s6 m4 l2">
       <article className="no-padding">
         <img className="responsive large" src={item.photo_url} />
         <div className="padding">
