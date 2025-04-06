@@ -36,10 +36,15 @@ function MenuCard({ item }: { item: Item}) {
       <article className="no-padding">
         <img className="responsive large" src={item.photo_url} />
         <div className="padding">
-          <h6>{item.name}</h6>
-          <nav>
-            {item.completed_at ? (<><i>check_box</i>{item.completed_at}</>) : <i>check_box_outline_blank</i>}
-          </nav>
+          <h5 className="small">{item.name}</h5>
+          {item.completed_at && (
+            <nav className="right-align">
+              <div className="chip round">
+                <i>check</i>
+                <span>{item.completed_at}</span>
+              </div>
+            </nav>
+          )}
         </div>
       </article>
     </div>
