@@ -1,33 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import useSWRImmutable from 'swr/immutable'
+import 'beercss'
+import 'material-dynamic-colors'
+
+interface Item {
+  id: string
+  name: string
+  large_type: string
+  photo_url: string
+  completed_at: string | null
+}
+
+function MenuList() {
+  const fetcher = (url: string) => fetch(url).then(res => res.json())
+  const { data: items, isLoading } = useSWRImmutable<Item[]>('https://komeda-api-20241013-d054cdaa7331.herokuapp.com/', fetcher)
+
+  if (isLoading || !items) {
+    return <progress className="circle"></progress>
+  }
+
+  return(
+    <div className="grid">
+      {items.map((item: Item) => {
+        return <MenuCard item={item} key={item.id}/>
+      })}
+    </div>
+  )
+}
+
+function MenuCard({ item }: { item: Item}) {
+  return (
+    <div className="s12 m6 l3">
+      <article className="no-padding">
+        <img className="responsive large" src={item.photo_url} />
+        <div className="padding">
+          <h6>{item.name}</h6>
+          <nav>
+            {item.completed_at ? (<><i>check_box</i>2025-04-05</>) : <i>check_box_outline_blank</i>}
+          </nav>
+        </div>
+      </article>
+    </div>
+  )
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <header>
+        <nav>
+          <h5 className="max center-align">コメダ珈琲全メニュー制覇プロジェクト</h5>
+        </nav>
+      </header>
+      <main className="responsive">
+        <MenuList />
+      </main>
     </>
   )
 }
