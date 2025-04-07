@@ -24,7 +24,7 @@ function MenuList() {
     }));
   };
 
-  const categories = ['All', 'Food', 'Drink', 'Dessert']
+  const categories = ['すべて', 'スナック', 'ドリンク', 'デザート']
   const [category, setCategory] = useState(categories[0])
 
   const fetcher = (url: string) => fetch(url).then(res => res.json())
@@ -35,8 +35,8 @@ function MenuList() {
   }
 
   const filteredItems = items.filter((item) => {
-    const category_map: { [key: string]: string } = { 'Food': '1-4', 'Drink': '1-2', 'Dessert': '1-3' }
-    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'All' ? true : category_map[category] === item.large_type)
+    const category_map: { [key: string]: string } = { 'スナック': '1-4', 'ドリンク': '1-2', 'デザート': '1-3' }
+    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category_map[category] === item.large_type)
   })
 
   return(
