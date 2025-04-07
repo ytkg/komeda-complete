@@ -6,7 +6,7 @@ import 'material-dynamic-colors'
 interface Item {
   id: string
   name: string
-  large_type: string
+  category: string
   photo_url: string
   completed_at: string | null
 }
@@ -35,8 +35,7 @@ function MenuList() {
   }
 
   const filteredItems = items.filter((item) => {
-    const category_map: { [key: string]: string } = { 'スナック': '1-4', 'ドリンク': '1-2', 'デザート': '1-3' }
-    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category_map[category] === item.large_type)
+    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category === item.category)
   })
 
   return(
