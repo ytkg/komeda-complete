@@ -8,10 +8,34 @@ export interface Item {
   completed_at: string | null
 }
 
+const isEmpty = (items: Item[]) => {
+  return items.length === 0
+}
+
+const getCachedItems = () => {
+  const sessionData = sessionStorage.getItem('items')
+
+  return sessionData ? JSON.parse(sessionData) as Item[] : []
+}
+
+const setCachedItems = (items: Item[]) => {
+  if (isEmpty(items)) {
+    return
+  }
+
+  sessionStorage.setItem('items', JSON.stringify(items))
+}
+
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
 export const useItems = () => {
-  const { data, isLoading } = useSWRImmutable<Item[]>('https://komeda-api-20241013-d054cdaa7331.herokuapp.com/', fetcher)
+  const cashedItems = getCachedItems()
 
-  return { items: data || [], isLoading }
+  const key = isEmpty(cashedItems) ? 'https://komeda-api-20241013-d054cdaa7331.herokuapp.com/' : null
+  const { data, isLoading } = useSWRImmutable<Item[]>(key, fetcher)
+  const items = data || cashedItems
+
+  setCachedItems(items)
+
+  return { items, isLoading }
 }
