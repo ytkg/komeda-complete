@@ -1,66 +1,25 @@
 import { useState } from 'react'
-import useSWRImmutable from 'swr/immutable'
+import { useCheckedItems } from './hooks/useCheckedItems'
+import { useItems } from './hooks/useItems'
+import type { Item } from './hooks/useItems'
 import 'beercss'
 import 'material-dynamic-colors'
 
-interface Item {
-  id: string
-  name: string
-  category: string
-  photo_url: string
-  completed_at: string | null
-}
+function MenuList({ items, isLoading }: { items: Item[], isLoading: boolean }) {
 
-function MenuList() {
-  const [checkedItems, setCheckedItems] = useState({
-    incomplete: true,
-    complete: true,
-  });
-
-  const handleChange = (key: keyof typeof checkedItems) => {
-    setCheckedItems((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  const categories = ['すべて', 'スナック', 'ドリンク', 'デザート']
-  const [category, setCategory] = useState(categories[0])
-
-  const fetcher = (url: string) => fetch(url).then(res => res.json())
-  const { data: items, isLoading } = useSWRImmutable<Item[]>('https://komeda-api-20241013-d054cdaa7331.herokuapp.com/', fetcher)
-
-  if (isLoading || !items) {
-    return <progress className="circle"></progress>
+  if (isLoading) {
+    return (
+      <>
+        <div className="padding">
+          <progress></progress>
+        </div>
+      </>
+    )
   }
-
-  const filteredItems = items.filter((item) => {
-    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category === item.category)
-  })
-
   return(
     <>
-      <div className="padding">
-        <nav>
-          <label className="checkbox">
-            <input type="checkbox" checked={checkedItems.incomplete} onChange={() => handleChange('incomplete')} />
-            <span>未</span>
-          </label>
-          <label className="checkbox">
-            <input type="checkbox" checked={checkedItems.complete} onChange={() => handleChange('complete')} />
-            <span>済</span>
-          </label>
-        </nav>
-      </div>
-      <div>
-        <div className="tabs">
-          {categories.map((c) => {
-            return <a className={category === c ? 'active' : ''} onClick={() => setCategory(c)}>{c}</a>
-          })}
-        </div>
-      </div>
       <div className="grid">
-        {filteredItems.map((item: Item) => {
+        {items.map((item: Item) => {
           return <MenuCard item={item} key={item.id}/>
         })}
       </div>
@@ -90,6 +49,17 @@ function MenuCard({ item }: { item: Item}) {
 }
 
 function App() {
+  const { checkedItems, handleChangeCheckedItems } = useCheckedItems()
+
+  const categories = ['すべて', 'スナック', 'ドリンク', 'デザート']
+  const [category, setCategory] = useState(categories[0])
+
+  const { items, isLoading } = useItems()
+
+  const filteredItems = items.filter((item) => {
+    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category === item.category)
+  })
+
   return (
     <>
       <header>
@@ -98,7 +68,26 @@ function App() {
         </nav>
       </header>
       <main className="responsive">
-        <MenuList />
+        <div className="padding">
+          <nav>
+            <label className="checkbox">
+              <input type="checkbox" checked={checkedItems.incomplete} onChange={() => handleChangeCheckedItems('incomplete')} />
+              <span>未</span>
+            </label>
+            <label className="checkbox">
+              <input type="checkbox" checked={checkedItems.complete} onChange={() => handleChangeCheckedItems('complete')} />
+              <span>済</span>
+            </label>
+          </nav>
+        </div>
+        <div>
+          <div className="tabs">
+            {categories.map((c) => {
+              return <a className={category === c ? 'active' : ''} onClick={() => setCategory(c)}>{c}</a>
+            })}
+          </div>
+        </div>
+        <MenuList items={filteredItems} isLoading={isLoading} />
       </main>
     </>
   )
