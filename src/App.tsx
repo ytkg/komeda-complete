@@ -31,7 +31,7 @@ function MenuCard({ item }: { item: Item}) {
   return (
     <div className="s6 m4 l2">
       <article className="no-padding">
-        <img className="responsive large" src={item.photo_url} />
+        <img className="responsive large" style={{ height: '100%' }} src={item.photo_url} />
         <div className="padding">
           <h5 className="small">{item.name}</h5>
           {item.completed_at && (
