@@ -91,11 +91,13 @@ function App() {
   const [category, setCategory] = useState(categories[0])
 
   const { items, isLoading } = useItems()
+  const [searchText, setSearchText] = useState('')
 
   const filteredItems = items.filter((item) => {
     return (
       (item.completed_at ? checkedItems.complete : checkedItems.incomplete) &&
-      (category === 'すべて' ? true : category === item.category)
+      (category === 'すべて' ? true : category === item.category) &&
+      item.name.includes(searchText)
     )
   })
 
@@ -142,6 +144,15 @@ function App() {
                 <i>view_list</i>
               </button>
             </nav>
+          </nav>
+          <nav>
+            <div className="max" />
+            <div className="field label prefix small round border">
+              <i>search</i>
+              <input type="text" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+              {/* biome-ignore lint/a11y/noLabelWithoutControl:*/}
+              <label>検索</label>
+            </div>
           </nav>
         </div>
         <div>
