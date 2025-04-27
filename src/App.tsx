@@ -5,33 +5,37 @@ import type { Item } from './hooks/useItems'
 import 'beercss'
 import 'material-dynamic-colors'
 
-function MenuList({ items, isLoading, isViewModule }: { items: Item[], isLoading: boolean, isViewModule: boolean }) {
+function MenuList({ items, isLoading, isViewModule }: { items: Item[]; isLoading: boolean; isViewModule: boolean }) {
   if (isLoading) {
     return (
       <>
         <div className="padding">
-          <progress></progress>
+          <progress />
         </div>
       </>
     )
   }
 
-  return(
+  return (
     <>
       <div className="grid">
         {items.map((item: Item) => {
-          return isViewModule ? <MenuViewModuleCard item={item} key={item.id}/> : <MenuViewListCard item={item} key={item.id}/>
+          return isViewModule ? (
+            <MenuViewModuleCard item={item} key={item.id} />
+          ) : (
+            <MenuViewListCard item={item} key={item.id} />
+          )
         })}
       </div>
     </>
   )
 }
 
-function MenuViewModuleCard({ item }: { item: Item}) {
+function MenuViewModuleCard({ item }: { item: Item }) {
   return (
     <div className="s6 m4 l2">
       <article className="no-padding">
-        <img className="responsive large" style={{ height: '100%' }} src={item.photo_url} />
+        <img className="responsive large" style={{ height: '100%' }} src={item.photo_url} alt={item.name} />
         <div className="padding">
           <h5 className="small">{item.name}</h5>
           {item.completed_at && (
@@ -51,26 +55,26 @@ function MenuViewModuleCard({ item }: { item: Item}) {
 function MenuViewListCard({ item }: { item: Item }) {
   return (
     <div className="s12">
-    <article className="no-padding">
-      <div className="grid no-space">
-        <div className="s3 l1">
-          <img className="responsive" style={{ height: '100%' }} src={item.photo_url} />
-        </div>
-        <div className="s9 l11">
-          <div className="padding">
-            <h5 className="small">{item.name}</h5>
-            {item.completed_at && (
-              <nav className="right-align">
-                <div className="chip round">
-                  <i>check</i>
-                  <span>{item.completed_at}</span>
-                </div>
-              </nav>
-            )}
+      <article className="no-padding">
+        <div className="grid no-space">
+          <div className="s3 l1">
+            <img className="responsive" style={{ height: '100%' }} src={item.photo_url} alt={item.name} />
+          </div>
+          <div className="s9 l11">
+            <div className="padding">
+              <h5 className="small">{item.name}</h5>
+              {item.completed_at && (
+                <nav className="right-align">
+                  <div className="chip round">
+                    <i>check</i>
+                    <span>{item.completed_at}</span>
+                  </div>
+                </nav>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
     </div>
   )
 }
@@ -89,7 +93,10 @@ function App() {
   const { items, isLoading } = useItems()
 
   const filteredItems = items.filter((item) => {
-    return (item.completed_at ? checkedItems.complete : checkedItems.incomplete) && (category === 'すべて' ? true : category === item.category)
+    return (
+      (item.completed_at ? checkedItems.complete : checkedItems.incomplete) &&
+      (category === 'すべて' ? true : category === item.category)
+    )
   })
 
   return (
@@ -103,19 +110,35 @@ function App() {
         <div className="padding">
           <nav>
             <label className="checkbox">
-              <input type="checkbox" checked={checkedItems.incomplete} onChange={() => handleChangeCheckedItems('incomplete')} />
+              <input
+                type="checkbox"
+                checked={checkedItems.incomplete}
+                onChange={() => handleChangeCheckedItems('incomplete')}
+              />
               <span>未</span>
             </label>
             <label className="checkbox">
-              <input type="checkbox" checked={checkedItems.complete} onChange={() => handleChangeCheckedItems('complete')} />
+              <input
+                type="checkbox"
+                checked={checkedItems.complete}
+                onChange={() => handleChangeCheckedItems('complete')}
+              />
               <span>済</span>
             </label>
-            <div className="max"></div>
+            <div className="max" />
             <nav className="no-space">
-              <button className={`border left-round small ${isViewModule && 'fill'}`} onClick={() => handleChangeViewMode(true)}>
+              <button
+                type="button"
+                className={`border left-round small ${isViewModule && 'fill'}`}
+                onClick={() => handleChangeViewMode(true)}
+              >
                 <i>view_module</i>
               </button>
-              <button className={`border right-round small ${!isViewModule && 'fill'}`} onClick={() => handleChangeViewMode(false)}>
+              <button
+                type="button"
+                className={`border right-round small ${!isViewModule && 'fill'}`}
+                onClick={() => handleChangeViewMode(false)}
+              >
                 <i>view_list</i>
               </button>
             </nav>
@@ -124,7 +147,12 @@ function App() {
         <div>
           <div className="tabs">
             {categories.map((c) => {
-              return <a className={category === c ? 'active' : ''} onClick={() => setCategory(c)}>{c}</a>
+              return (
+                // biome-ignore lint/a11y/useValidAnchor:
+                <a key={c} className={category === c ? 'active' : ''} onClick={() => setCategory(c)}>
+                  {c}
+                </a>
+              )
             })}
           </div>
         </div>

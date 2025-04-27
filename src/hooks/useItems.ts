@@ -15,7 +15,7 @@ const isEmpty = (items: Item[]) => {
 const getCachedItems = () => {
   const sessionData = sessionStorage.getItem('items')
 
-  return sessionData ? JSON.parse(sessionData) as Item[] : []
+  return sessionData ? (JSON.parse(sessionData) as Item[]) : []
 }
 
 const setCachedItems = (items: Item[]) => {
@@ -26,7 +26,7 @@ const setCachedItems = (items: Item[]) => {
   sessionStorage.setItem('items', JSON.stringify(items))
 }
 
-const fetcher = (url: string) => fetch(url).then(res => res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export const useItems = () => {
   const cashedItems = getCachedItems()
