@@ -5,8 +5,7 @@ import type { Item } from './hooks/useItems'
 import 'beercss'
 import 'material-dynamic-colors'
 
-function MenuList({ items, isLoading }: { items: Item[], isLoading: boolean }) {
-
+function MenuList({ items, isLoading, isViewModule }: { items: Item[], isLoading: boolean, isViewModule: boolean }) {
   if (isLoading) {
     return (
       <>
@@ -16,18 +15,19 @@ function MenuList({ items, isLoading }: { items: Item[], isLoading: boolean }) {
       </>
     )
   }
+
   return(
     <>
       <div className="grid">
         {items.map((item: Item) => {
-          return <MenuCard item={item} key={item.id}/>
+          return isViewModule ? <MenuViewModuleCard item={item} key={item.id}/> : <MenuViewListCard item={item} key={item.id}/>
         })}
       </div>
-  </>
+    </>
   )
 }
 
-function MenuCard({ item }: { item: Item}) {
+function MenuViewModuleCard({ item }: { item: Item}) {
   return (
     <div className="s6 m4 l2">
       <article className="no-padding">
@@ -48,8 +48,40 @@ function MenuCard({ item }: { item: Item}) {
   )
 }
 
+function MenuViewListCard({ item }: { item: Item }) {
+  return (
+    <div className="s12">
+    <article className="no-padding">
+      <div className="grid no-space">
+        <div className="s3 l1">
+          <img className="responsive" style={{ height: '100%' }} src={item.photo_url} />
+        </div>
+        <div className="s9 l11">
+          <div className="padding">
+            <h5 className="small">{item.name}</h5>
+            {item.completed_at && (
+              <nav className="right-align">
+                <div className="chip round">
+                  <i>check</i>
+                  <span>{item.completed_at}</span>
+                </div>
+              </nav>
+            )}
+          </div>
+        </div>
+      </div>
+    </article>
+    </div>
+  )
+}
+
 function App() {
   const { checkedItems, handleChangeCheckedItems } = useCheckedItems()
+  const [isViewModule, setIsViewModule] = useState(true)
+
+  const handleChangeViewMode = (isViewModule: boolean) => {
+    setIsViewModule(isViewModule)
+  }
 
   const categories = ['すべて', 'スナック', 'ドリンク', 'デザート']
   const [category, setCategory] = useState(categories[0])
@@ -78,6 +110,15 @@ function App() {
               <input type="checkbox" checked={checkedItems.complete} onChange={() => handleChangeCheckedItems('complete')} />
               <span>済</span>
             </label>
+            <div className="max"></div>
+            <nav className="no-space">
+              <button className={`border left-round small ${isViewModule && 'fill'}`} onClick={() => handleChangeViewMode(true)}>
+                <i>view_module</i>
+              </button>
+              <button className={`border right-round small ${!isViewModule && 'fill'}`} onClick={() => handleChangeViewMode(false)}>
+                <i>view_list</i>
+              </button>
+            </nav>
           </nav>
         </div>
         <div>
@@ -87,7 +128,7 @@ function App() {
             })}
           </div>
         </div>
-        <MenuList items={filteredItems} isLoading={isLoading} />
+        <MenuList items={filteredItems} isLoading={isLoading} isViewModule={isViewModule} />
       </main>
     </>
   )
